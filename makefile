@@ -3,3 +3,9 @@ install:
 
 start-dev:
 	uvicorn main:app --reload
+
+migrate:
+		alembic revision --autogenerate -m "$(msg)"
+
+upgrade:
+	alembic upgrade head
