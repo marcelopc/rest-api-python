@@ -1,0 +1,6 @@
+uvicorn 
+sqlalchemy 
+passlib 
+python-jose 
+python-dotenv 
+python-multipart
