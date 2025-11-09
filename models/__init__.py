@@ -4,8 +4,8 @@ from .usuarios import Usuario
 from .pedidos import Pedido
 from .itensPedido import ItemPedido
 
-engine = create_engine('sqlite:///banco.db')
+db = create_engine('sqlite:///banco.db')
 
 # Cria as tabelas no banco de dados
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=db)
 

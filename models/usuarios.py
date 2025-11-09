@@ -5,7 +5,7 @@ class Usuario(Base):
     __tablename__ = 'usuarios'
 
     id = Column('id', Integer, primary_key=True, index=True, autoincrement=True)
-    nome = Column('nome', String, unique=True, index=True)
+    nome = Column('nome', String, index=True)
     email = Column('email', String, unique=True, index=True, nullable=False)
     senha = Column('senha', String)
     ativo = Column('ativo', Boolean, default=True)
