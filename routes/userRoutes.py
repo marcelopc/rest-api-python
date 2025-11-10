@@ -3,7 +3,7 @@ from controllers.user import createAccount
 from dependencies import create_session
 from utils.crypto import bcrypt_context
 from exceptions import AppException
-from schemas import UsuarioSchema
+from schemas.usuario import UsuarioSchema
 from sqlalchemy.orm import Session
 
 PREFIX = '/user'

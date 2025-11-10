@@ -1,8 +1,9 @@
 from models import Usuario
 from exceptions import AppException
+from sqlalchemy.orm import Session
 
 
-async def createAccount(email:str, senha:str, nome:str, session):
+async def createAccount(email:str, senha:str, nome:str, session:Session):
     usuario = session.query(Usuario).filter(Usuario.email == email).first()
     
     if usuario:

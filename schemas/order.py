@@ -1,9 +1,8 @@
 from pydantic import BaseModel
 
-class Usuario(BaseModel):
-    nome: str
-    email:str
-    senha:str
+
+class OrderSchema(BaseModel):
+    usuario_id: int
 
     class Config:
         from_attributes = True
