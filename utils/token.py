@@ -19,6 +19,5 @@ def verifyToken(token:str):
         return jwt.decode(token, SECRET_KEY, ALGORITHM)
     except jwt.ExpiredSignatureError:
         raise Exception('Token expirado')
-    except jwt.JWTError as e:
-        print(e)
+    except jwt.JWTError:
         raise Exception('Token inválido')
