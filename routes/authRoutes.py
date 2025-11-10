@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.security import OAuth2PasswordRequestForm
 from dependencies import create_session, get_bcrypt, get_token_generator, get_token_verifier
 from schemas.login import LoginSchema
 from schemas.oauth import Oauth2Schema
@@ -24,6 +25,22 @@ async def auth(
         raise HTTPException(status_code=e.status, detail=e.message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Erro interno: {str(e)}')
+    
+@authRouter.post('/loginform')
+async def loginform(
+    body: OAuth2PasswordRequestForm = Depends(),
+    session: Session = Depends(create_session),
+    bcrypt = Depends(get_bcrypt),
+    tokenGenerate = Depends(get_token_generator)
+):
+    try:
+        output = login(body.username, body.password, session, bcrypt, tokenGenerate)
+        return output
+    except AppException as e:
+        raise HTTPException(status_code=e.status, detail=e.message)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Erro interno: {str(e)}')
+    
     
 @authRouter.get('/refresh')
 async def refresh(

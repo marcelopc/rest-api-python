@@ -23,7 +23,7 @@ def login(
     token = tokenGenerate(usuario.id)
     refreshToken = tokenGenerate(usuario.id, timedelta(days=7))
 
-    return {'token': token, 'token_type': 'Bearer', 'refreshToken': refreshToken}
+    return {'access_token': token, 'token_type': 'Bearer', 'refreshToken': refreshToken}
 
 def refreshToken(
     token: str, 
@@ -38,7 +38,7 @@ def refreshToken(
         
         newRefreshToken = tokenGenerate(usuario.id, timedelta(days=7))
 
-        return {'token': newRefreshToken, 'token_type': 'Bearer'}
+        return {'access_token': newRefreshToken, 'token_type': 'Bearer'}
     except Exception as e:
         error_message = str(e)
         if 'Token expirado' in error_message:
