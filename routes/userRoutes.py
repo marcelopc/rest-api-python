@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
-from controllers.user import createAccount
+from core.user import createAccount
 from dependencies import create_session
 from utils.crypto import bcrypt_context
 from exceptions import AppException

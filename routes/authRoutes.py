@@ -4,7 +4,7 @@ from dependencies import create_session, get_bcrypt, get_token_generator, get_to
 from schemas.login import LoginSchema
 from schemas.oauth import Oauth2Schema
 from sqlalchemy.orm import Session
-from controllers.auth import login, refreshToken
+from core.auth import login, refreshToken
 from exceptions import AppException
 
 PREFIX = '/auth'

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
-from controllers.orders import get_orders, createOrder
+from core.orders import get_orders, createOrder
 from dependencies import create_session
 from exceptions import AppException
 from schemas.order import OrderSchema
