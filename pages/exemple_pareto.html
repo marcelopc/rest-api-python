@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Pareto - Exemplo Template</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #7eb3e8;
+            --secondary-red: #f5a3a3;
+            --accent-orange: #ffd4a3;
+            --accent-green: #c8e6c9;
+            --text-color: #333;
+            --header-bg: var(--primary-blue);
+            --card-bg: #ffffff;
+            --border-color: #eee;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.1em;
+        }
+
+        section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+
+        h2 {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: var(--primary-blue);
+            margin-top: 20px;
+            font-size: 1.4em;
+        }
+        
+        h4 {
+            color: #5a9bd4;
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+
+        h5 {
+            color: #6a6a6a;
+            margin-top: 10px;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        h6 {
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+            transition: background-color 0.3s ease;
+        }
+
+        .highlight-top3 {
+            background-color: var(--accent-orange) !important;
+            font-weight: bold;
+        }
+
+        .highlight-80percent {
+            background-color: var(--accent-green) !important;
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        details {
+            background-color: #fcfcfc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        details summary {
+            font-weight: bold;
+            padding: 15px 20px;
+            cursor: pointer;
+            background-color: #eaf3ff;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-blue);
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+
+        details summary:hover {
+            background-color: #dbeaff;
+        }
+        
+        details[open] summary {
+            border-bottom: 1px solid var(--primary-blue);
+        }
+
+        details > div {
+            padding: 15px 20px;
+            background-color: var(--card-bg);
+        }
+
+        details table {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            box-shadow: none;
+            border: none;
+        }
+
+        details table th, details table td {
+            border: 1px solid #e0e0e0;
+        }
+
+        .tag {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            padding: 5px;
+            border: solid 1px #ff9800;
+            margin-right: 4px;
+        }
+
+
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: white;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .severity-badge.bg-red { background-color: #e74c3c; }
+        .severity-badge.bg-orange { background-color: #f39c12; }
+        .severity-badge.bg-yellow { background-color: #f1c40f; color: #333; }
+        .severity-badge.bg-green { background-color: #2ecc71; }
+        .severity-badge.bg-gray { background-color: #95a5a6; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8em; }
+            header p { font-size: 1em; }
+            section { padding: 15px; }
+            h2 { font-size: 1.5em; }
+            h3 { font-size: 1.2em; }
+            .chart-container { height: 300px; }
+            table, th, td { display: block; width: 100%; }
+            thead { display: none; }
+            tr { margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 5px; display: block; }
+            td { text-align: right; position: relative; padding-left: 50%; }
+            td::before { content: attr(data-label); position: absolute; left: 10px; width: calc(50% - 20px); text-align: left; font-weight: bold; color: var(--primary-blue); }
+            .severity-badge { margin-left: 0; display: block; width: fit-content; margin-top: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Análise de Pareto para Suporte Técnico</h1>
+            <p>Período da Análise: <span id="dataInicio"></span> a <span id="dataFim"></span> | Total de Tickets: <span id="totalTickets"></span></p>
+        </div>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>Gráfico de Pareto Geral</h2>
+            <div class="chart-container">
+                <canvas id="paretoChartGeral"></canvas>
+            </div>
+        </section>
+
+        <section id="tabelaCategorias">
+            <h2>Tabela de Categorias</h2>
+            <div id="tabelaCategoriasContent"></div>
+        </section>
+
+        <section id="analiseGeralInsights">
+            <h2>Insights da Análise Geral</h2>
+            <div id="analiseGeralContent"></div>
+        </section>
+
+        <section id="analiseGeralSugestoes">
+            <h2>Sugestões da Análise Geral</h2>
+            <div id="analiseGeralSugestoesContent"></div>
+        </section>
+
+        <section id="categoriesSection">
+            <h2>Análise por Categoria</h2>
+            <div id="categoriesContainer"></div>
+        </section>
+    </div>
+
+    <script>
+        const rawData = {
+  "data_inicio": "19-10-2025",
+  "data_fim": "18-11-2025",
+  "total_tickets": 121,
+  "categorias": {
+    "motivo_contato_geral_configuracoes_da_minha_loja": {
+      "label": "Configurações da minha loja",
+      "quantidade": 54,
+      "percentual_total": 44.63,
+      "percentual_acumulado": 44.63,
+      "insights": {
+        "sumario": "A categoria de 'Configurações da minha loja' é o maior foco de problemas, com sellers enfrentando falhas críticas de acesso ao portal e impedimentos em funcionalidades básicas, o que os impede de operar e gerenciar suas lojas de forma eficaz.",
+        "analise_detalhada": "Esta é a categoria com o maior número de tickets (54), todos concentrados na subcategoria 'Não consigo acessar'. Isso indica um problema sistêmico e generalizado que afeta a capacidade fundamental dos sellers de interagir com a plataforma. Os erros incluem 'forbidden' persistentes, redirecionamentos incorretos para outras plataformas (PME, Universo Magalu), falhas na criação de novas contas ou no acesso a funcionalidades essenciais como assinatura de contratos, envio de mensagens a clientes, acesso a abas específicas (SAC, downloads) e gerenciamento de fretes/promoções.",
+        "palavras_chave": ["acesso", "forbidden", "portal", "seller", "PME", "redirecionamento", "login", "erro"],
+        "tendencias": "A tendência é clara: problemas persistentes e recorrentes no acesso ao portal, que não são resolvidos por soluções paliativas.",
+        "severidade": "critica"
+      },
+      "sugestoes": {
+        "recomendacoes": [
+          "Priorizar uma força-tarefa multidisciplinar para investigar e resolver a causa raiz dos problemas de acesso ('forbidden', redirecionamentos) de forma definitiva.",
+          "Redesenhar e fortalecer a arquitetura de autenticação e autorização do portal do seller, garantindo consistência e robustez."
+        ],
+        "quick_wins": [
+          "Melhorar a documentação interna e externa com fluxos de trabalho claros para o suporte e sellers sobre como diagnosticar e escalar problemas de acesso."
+        ]
+      },
+      "subcategorias": {
+        "classif_geral_nao_consigo_acessar": {
+          "label": "Não consigo acessar",
+          "quantidade": 54,
+          "percentual_categoria": 100.00,
+          "percentual_acumulado_categoria": 100.00,
+          "insights": {
+            "sumario": "Sellers enfrentam erros 'Forbidden' persistentes e redirecionamentos incorretos ao tentar acessar o portal, impedindo operações básicas.",
+            "analise_tickets": "Os tickets revelam um padrão crítico de falhas de acesso ao portal PME, com erros 'Forbidden' recorrentes mesmo após tentativas de limpeza de cache e cookies.",
+            "causa_raiz_provavel": "Falha na arquitetura de autenticação e autorização do portal do seller, com problemas de gerenciamento de sessões e redirecionamentos.",
+            "padroes_identificados": ["Erro 'Forbidden' persistente", "Redirecionamento para plataformas incorretas", "Acesso bloqueado a funcionalidades específicas"],
+            "exemplos_tickets": ["Seller não consegue acessar o portal PME", "Erro ao tentar assinar contrato", "Mensagens a clientes bloqueadas"]
+          },
+          "sugestoes": {
+            "por_subcategoria": [
+              {
+                "subcategoria": "Não consigo acessar",
+                "acoes": [
+                  "Revisar sistema de autenticação e autorização",
+                  "Corrigir lógica de redirecionamento entre plataformas",
+                  "Implementar logs detalhados para diagnóstico de erros de acesso"
+                ]
+              }
+            ],
+            "documentacao": "Criar guia de troubleshooting para erros de acesso mais comuns",
+            "melhorias_produto": "Implementar mensagens de erro mais descritivas e ações corretivas sugeridas"
+          },
+          "analise_sre": {
+            "categoria": "motivo_contato_geral_configuracoes_da_minha_loja",
+            "subcategoria": "classif_geral_nao_consigo_acessar",
+            "acao_contencao": [
+              {
+                "nome": "Hotfix para Redirecionamentos",
+                "descricao": "Implementar correção emergencial para resolver redirecionamentos incorretos entre PME e outras plataformas. Prazo: 24-48h."
+              },
+              {
+                "nome": "Bypass Temporário para Casos Críticos",
+                "descricao": "Criar mecanismo de acesso alternativo para sellers bloqueados com alta prioridade. Prazo: 2-3 dias."
+              }
+            ],
+            "acao_causa_raiz": [
+              {
+                "nome": "Refatoração do Sistema de Autenticação",
+                "descricao": "Redesenhar completamente a arquitetura de autenticação e autorização para eliminar pontos de falha. Prazo: 6-8 semanas."
+              },
+              {
+                "nome": "Unificação de Sessões Multi-Plataforma",
+                "descricao": "Implementar sistema unificado de gerenciamento de sessões entre PME, Universo Magalu e outras plataformas. Prazo: 8-10 semanas."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "motivo_contato_geral_nota_fiscal": {
+      "label": "Nota fiscal",
+      "quantidade": 31,
+      "percentual_total": 25.62,
+      "percentual_acumulado": 70.25,
+      "insights": {
+        "sumario": "A emissão e validação de notas fiscais representam o segundo maior volume de problemas, com sellers enfrentando falhas sistêmicas, lentidão na aprovação e dificuldades com certificados digitais.",
+        "palavras_chave": ["nota fiscal", "NF", "faturar", "validação", "SEFAZ", "certificado", "erro"],
+        "tendencias": "A principal tendência é a complexidade e a variedade de erros no processo de faturamento e validação de NFs.",
+        "severidade": "critica"
+      },
+      "sugestoes": {
+        "recomendacoes": [
+          "Priorizar a estabilidade e performance do processo de validação de NF para garantir agilidade e reduzir atrasos."
+        ],
+        "quick_wins": [
+          "Disponibilizar um FAQ interativo no portal sobre os erros mais frequentes de NF e como resolvê-los."
+        ]
+      },
+      "subcategorias": {
+        "classif_geral_nao_consigo_faturar": {
+          "label": "Não consigo faturar",
+          "quantidade": 15,
+          "percentual_categoria": 48.39,
+          "percentual_acumulado_categoria": 48.39,
+          "insights": {
+            "sumario": "Sellers enfrentam erros complexos ao tentar emitir notas fiscais, desde falhas de comunicação com SEFAZ até problemas com certificados digitais.",
+            "causa_raiz_provavel": "Falhas na integração com SEFAZ e inconsistências na validação de certificados digitais."
+          },
+          "sugestoes": {
+            "documentacao": "Criar guia visual sobre o processo de faturamento e erros mais comuns",
+            "melhorias_produto": "Melhorar feedback de erros durante emissão de NF"
+          }
+        },
+        "classif_geral_demora_na_validacao": {
+          "label": "Demora na validação",
+          "quantidade": 12,
+          "percentual_categoria": 38.71,
+          "percentual_acumulado_categoria": 87.10,
+          "insights": {
+            "sumario": "Processo de validação de NF apresenta lentidão excessiva, afetando reputação dos sellers.",
+            "analise_sre": {
+              "categoria": "motivo_contato_geral_nota_fiscal",
+              "subcategoria": "classif_geral_demora_na_validacao",
+              "acao_contencao": [
+                {
+                  "nome": "Priorização de Fila",
+                  "descricao": "Implementar sistema de priorização para NFs aguardando validação há mais de 24h. Prazo: 2-3 dias."
+                }
+              ],
+              "acao_causa_raiz": [
+                {
+                  "nome": "Otimização do Pipeline de Validação",
+                  "descricao": "Refatorar processo de validação para reduzir tempo médio em 70%. Prazo: 4-6 semanas."
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "motivo_contato_geral_meus_produtos": {
+      "label": "Meus Produtos",
+      "quantidade": 19,
+      "percentual_total": 15.70,
+      "percentual_acumulado": 85.95,
+      "insights": {
+        "sumario": "A gestão de produtos é uma área crítica, com sellers enfrentando barreiras significativas na publicação e na consistência dos dados de seus produtos.",
+        "palavras_chave": ["produto", "publicação", "SKU", "estoque", "inativo", "erro"],
+        "severidade": "alta"
+      },
+      "sugestoes": {
+        "recomendacoes": [
+          "Auditar e otimizar toda a pipeline de publicação de produtos, desde o cadastro até a exibição no site."
+        ]
+      },
+      "subcategorias": {
+        "classif_geral_nao_esta_publicado": {
+          "label": "Não está publicado",
+          "quantidade": 12,
+          "percentual_categoria": 63.16,
+          "percentual_acumulado_categoria": 63.16,
+          "insights": {
+            "sumario": "Produtos ficam 'aguardando publicação' por longos períodos ou não aparecem corretamente no site."
+          },
+          "analise_sre": {
+            "categoria": "motivo_contato_geral_meus_produtos",
+            "subcategoria": "classif_geral_nao_esta_publicado",
+            "acao_contencao": [
+              {
+                "nome": "Reprocessamento Manual",
+                "descricao": "Criar ferramenta para reprocessar produtos travados em 'aguardando publicação'. Prazo: 3-5 dias."
+              }
+            ],
+            "acao_causa_raiz": [
+              {
+                "nome": "Refatoração do Pipeline de Publicação",
+                "descricao": "Redesenhar fluxo de publicação para eliminar gargalos e garantir SLA de 15 minutos. Prazo: 5-7 semanas."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "analise_geral": {
+    "insights": {
+      "sumario_executivo": {
+        "top3_percentual": "85.95%",
+        "categorias_80_percentual": 3,
+        "categoria_cotovelo": "Meus Produtos",
+        "percentual_cotovelo": "85.95%",
+        "principais_achados": [
+          "Configurações da minha loja, Nota Fiscal e Meus Produtos representam 85.95% dos 121 tickets",
+          "O maior volume de chamados (44.63%) está em 'Configurações da minha loja', com problemas de acesso crítico",
+          "'Nota Fiscal' (25.62%) é o segundo ofensor, com falhas na emissão e validação",
+          "'Meus Produtos' (15.70%) é a terceira categoria, lidando com publicações travadas"
+        ]
+      },
+      "analise_detalhada": [
+        "A análise dos tickets no período de 19-10-2025 a 18-11-2025 revela que 3 categorias principais são responsáveis por 85.95% dos 121 tickets.",
+        "A categoria 'Configurações da minha loja' é o maior ofensor, com 54 tickets (44.63% do total), todos em 'Não consigo acessar'.",
+        "Em segundo lugar, 'Nota fiscal' totaliza 31 tickets (25.62%), com problemas em emissão e validação.",
+        "A categoria 'Meus Produtos' responde por 19 tickets (15.70%), principalmente em 'Não está publicado'."
+      ],
+      "principio_pareto": "O Princípio de Pareto (80/20) se aplica claramente: as 3 principais categorias somam 104 tickets, representando 85.95% do total.",
+      "top3_ofensores": [
+        "Configurações da minha loja",
+        "Nota fiscal",
+        "Meus Produtos"
+      ]
+    },
+    "sugestoes": {
+      "recomendacoes_estrategicas": [
+        {
+          "categoria": "Configurações da minha loja",
+          "subcategorias_foco": ["Não consigo acessar"],
+          "texto": "Lançar força-tarefa de engenharia para reestruturar sistema de autenticação, autorização e gerenciamento de sessões do portal."
+        },
+        {
+          "categoria": "Nota fiscal",
+          "subcategorias_foco": ["Não consigo faturar", "Demora na validação"],
+          "texto": "Revisar arquitetura e integrações dos sistemas de faturamento e validação de notas fiscais para garantir robustez e agilidade."
+        },
+        {
+          "categoria": "Meus Produtos",
+          "subcategorias_foco": ["Não está publicado", "Atualizações e Correções"],
+          "texto": "Auditar e otimizar pipeline de publicação de produtos para garantir sincronização em tempo real."
+        }
+      ],
+      "impacto_estimado": "A implementação dessas recomendações resultará em redução estimada de aproximadamente 85% no volume de tickets. Isso liberará a equipe de atendimento e melhorará significativamente a experiência do seller."
+    }
+  }
+};
+
+        // Helper function to determine severity badge
+        function getSeverityBadge(percentage) {
+            if (percentage > 30) return '<span class="severity-badge bg-red">Crítico</span>';
+            if (percentage > 20) return '<span class="severity-badge bg-orange">Alto</span>';
+            if (percentage > 10) return '<span class="severity-badge bg-yellow">Médio</span>';
+            return '<span class="severity-badge bg-green">Baixo</span>';
+        }
+
+        // Populate header
+        document.getElementById('dataInicio').textContent = rawData.data_inicio;
+        document.getElementById('dataFim').textContent = rawData.data_fim;
+        document.getElementById('totalTickets').textContent = rawData.total_tickets;
+
+        // General insights
+        const analiseGeralContent = document.getElementById('analiseGeralContent');
+        if (rawData.analise_geral && rawData.analise_geral.insights) {
+            const insights = rawData.analise_geral.insights;
+            let htmlContent = '<h3>Sumário Executivo</h3>';
+            if (insights.sumario_executivo) {
+                if (insights.sumario_executivo.top3_percentual) {
+                    htmlContent += `<p><strong>Top 3 Categorias:</strong> ${insights.sumario_executivo.top3_percentual}</p>`;
+                }
+                if (insights.sumario_executivo.categorias_80_percentual) {
+                    htmlContent += `<p><strong>Categorias que representam 80%:</strong> ${insights.sumario_executivo.categorias_80_percentual}</p>`;
+                }
+                if (insights.sumario_executivo.categoria_cotovelo) {
+                    htmlContent += `<p><strong>Categoria Cotovelo (Pareto):</strong> ${insights.sumario_executivo.categoria_cotovelo} (${insights.sumario_executivo.percentual_cotovelo || ''})</p>`;
+                }
+                if (insights.sumario_executivo.principais_achados) {
+                    htmlContent += '<h4>Principais Achados</h4><ul>';
+                    insights.sumario_executivo.principais_achados.forEach(achado => {
+                        htmlContent += `<li>${achado}</li>`;
+                    });
+                    htmlContent += '</ul>';
+                }
+            }
+            if (insights.analise_detalhada) {
+                htmlContent += '<h3>Análise Detalhada</h3>';
+                // Check if analise_detalhada is an array or object
+                if (Array.isArray(insights.analise_detalhada.paragrafos)) {
+                    insights.analise_detalhada.paragrafos.forEach(paragrafo => {
+                        htmlContent += `<p>${paragrafo}</p>`;
+                    });
+                } else {
+                    if (insights.analise_detalhada.distribuicao) {
+                        htmlContent += `<p><strong>Distribuição:</strong> ${insights.analise_detalhada.distribuicao}</p>`;
+                    }
+                    if (insights.analise_detalhada.tendencias) {
+                        htmlContent += `<p><strong>Tendências:</strong> ${insights.analise_detalhada.tendencias}</p>`;
+                    }
+                    if (insights.analise_detalhada.criticidade) {
+                        htmlContent += `<p><strong>Criticidade:</strong> ${insights.analise_detalhada.criticidade}</p>`;
+                    }
+                }
+            }
+            if (insights.principio_pareto) {
+                htmlContent += `<h4>Princípio de Pareto</h4><p>${insights.principio_pareto}</p>`;
+            }
+            if (insights.top3_ofensores && Array.isArray(insights.top3_ofensores)) {
+                htmlContent += '<h4>Top 3 Ofensores</h4><ul>';
+                insights.top3_ofensores.forEach(ofensor => {
+                    htmlContent += `<li>${ofensor}</li>`;
+                });
+                htmlContent += '</ul>';
+            }
+            analiseGeralContent.innerHTML = htmlContent;
+        }
+
+        // General suggestions
+        const analiseGeralSugestoesContent = document.getElementById('analiseGeralSugestoesContent');
+        if (rawData.analise_geral && rawData.analise_geral.sugestoes) {
+            let htmlSugestoes = '';
+            if (rawData.analise_geral.sugestoes.recomendacoes_estrategicas) {
+                htmlSugestoes += '<h3>Recomendações Estratégicas</h3>';
+                // Check if it's an array of strings or objects
+                if (Array.isArray(rawData.analise_geral.sugestoes.recomendacoes_estrategicas)) {
+                    const firstItem = rawData.analise_geral.sugestoes.recomendacoes_estrategicas[0];
+                    if (typeof firstItem === 'object' && firstItem.categoria) {
+                        // Array of objects with categoria, subcategorias_foco, texto
+                        rawData.analise_geral.sugestoes.recomendacoes_estrategicas.forEach(rec => {
+                            htmlSugestoes += `<h4>${rec.categoria}</h4>`;
+                            if (rec.subcategorias_foco && rec.subcategorias_foco.length > 0) {
+                                htmlSugestoes += `<p><strong>Foco:</strong> ${rec.subcategorias_foco.join(', ')}</p>`;
+                            }
+                            htmlSugestoes += `<p>${rec.texto}</p>`;
+                        });
+                    } else {
+                        // Array of strings
+                        htmlSugestoes += '<ul>';
+                        rawData.analise_geral.sugestoes.recomendacoes_estrategicas.forEach(rec => {
+                            htmlSugestoes += `<li>${rec}</li>`;
+                        });
+                        htmlSugestoes += '</ul>';
+                    }
+                }
+            }
+            if (rawData.analise_geral.sugestoes.impacto_estimado) {
+                htmlSugestoes += `<p><strong>Impacto Estimado:</strong> ${rawData.analise_geral.sugestoes.impacto_estimado}</p>`;
+            }
+            analiseGeralSugestoesContent.innerHTML = htmlSugestoes;
+        }
+
+        // Prepare data for general Pareto chart
+        const categoriesArray = Object.entries(rawData.categorias).map(([key, cat]) => ({
+            key: key,
+            label: cat.label,
+            quantidade: cat.quantidade,
+            percentual_total: cat.percentual_total,
+            percentual_acumulado: cat.percentual_acumulado,
+            original: cat
+        }));
+        categoriesArray.sort((a, b) => b.quantidade - a.quantidade);
+
+        const labelsGeral = categoriesArray.map(c => c.label);
+        const dataGeral = categoriesArray.map(c => c.quantidade);
+        const percentsAcumGeral = categoriesArray.map(c => c.percentual_acumulado);
+
+        // Multi-color palette (10 colors)
+        const colorPalette = [
+            'rgba(54, 162, 235, 0.6)',  // Blue
+            'rgba(255, 99, 132, 0.6)',  // Red
+            'rgba(255, 206, 86, 0.6)',  // Yellow
+            'rgba(75, 192, 192, 0.6)',  // Teal
+            'rgba(153, 102, 255, 0.6)', // Purple
+            'rgba(255, 159, 64, 0.6)',  // Orange
+            'rgba(199, 199, 199, 0.6)', // Gray
+            'rgba(83, 102, 255, 0.6)',  // Indigo
+            'rgba(255, 102, 178, 0.6)', // Pink
+            'rgba(102, 255, 178, 0.6)'  // Mint
+        ];
+
+        const borderColorPalette = [
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(199, 199, 199, 1)',
+            'rgba(83, 102, 255, 1)',
+            'rgba(255, 102, 178, 1)',
+            'rgba(102, 255, 178, 1)'
+        ];
+
+        const backgroundColors = dataGeral.map((_, i) => colorPalette[i % colorPalette.length]);
+        const borderColors = dataGeral.map((_, i) => borderColorPalette[i % borderColorPalette.length]);
+
+        // General Pareto chart
+        const ctxGeral = document.getElementById('paretoChartGeral').getContext('2d');
+        new Chart(ctxGeral, {
+            type: 'bar',
+            data: {
+                labels: labelsGeral,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Quantidade de Tickets',
+                        data: dataGeral,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: '% Acumulado',
+                        data: percentsAcumGeral,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        yAxisID: 'y1',
+                        tension: 0.4,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' },
+                    title: { display: true, text: 'Distribuição de Tickets por Categoria (Pareto Geral)' }
+                },
+                scales: {
+                    y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Quantidade' } },
+                    y1: { beginAtZero: true, position: 'right', max: 100, title: { display: true, text: '% Acumulado' }, grid: { drawOnChartArea: false } }
+                }
+            }
+        });
+
+        // Generate categories table
+        const tabelaCategoriasContent = document.getElementById('tabelaCategoriasContent');
+        let tableHtml = '<table><thead><tr><th>Categoria</th><th>Quantidade</th><th>% do Total</th><th>% Cumulativo</th></tr></thead><tbody>';
+        
+        categoriesArray.forEach((categoryData, index) => {
+            const isTop3 = index < 3;
+            const rowClass = isTop3 ? 'highlight-top3' : '';
+            tableHtml += `<tr class="${rowClass}">
+                <td data-label="Categoria">${categoryData.label}</td>
+                <td data-label="Quantidade">${categoryData.quantidade}</td>
+                <td data-label="% do Total">${categoryData.percentual_total.toFixed(2)}%</td>
+                <td data-label="% Cumulativo">${categoryData.percentual_acumulado.toFixed(2)}%</td>
+            </tr>`;
+        });
+        
+        tableHtml += '</tbody></table>';
+        tabelaCategoriasContent.innerHTML = tableHtml;
+
+        // Determine top 3 overall for SRE
+        const top3OverallLabels = categoriesArray.slice(0, 3).map(c => c.label);
+
+        // Categories section
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        categoriesArray.forEach((categoryData) => {
+            const categoryOriginal = categoryData.original;
+            const categoryKey = categoryData.key;
+
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+            summary.innerHTML = `${categoryOriginal.label} - ${categoryOriginal.quantidade} tickets (${categoryOriginal.percentual_total.toFixed(2)}% do total) ${getSeverityBadge(categoryOriginal.percentual_total)}`;
+            details.appendChild(summary);
+
+            const contentDiv = document.createElement('div');
+
+            const tag = (text) => `<span>${text}</span>`;
+            // Category insights
+            if (categoryOriginal.insights) {
+                let insightsHtml = '<h3>Insights da Categoria</h3>';
+                if (categoryOriginal.insights.sumario) {
+                    insightsHtml += `<p><strong>Sumário:</strong> ${categoryOriginal.insights.sumario}</p>`;
+                }
+                if (categoryOriginal.insights.analise_detalhada) {
+                    insightsHtml += `<p><strong>Análise Detalhada:</strong> ${categoryOriginal.insights.analise_detalhada}</p>`;
+                }
+                if (categoryOriginal.insights.palavras_chave && Array.isArray(categoryOriginal.insights.palavras_chave)) {
+                    insightsHtml += `<p><strong>Palavras-chave:</strong> ${categoryOriginal.insights.palavras_chave.map(item=>tag(item)).join(' ')}</p>`;
+                }
+                if (categoryOriginal.insights.tendencias) {
+                    insightsHtml += `<p><strong>Tendências:</strong> ${categoryOriginal.insights.tendencias}</p>`;
+                }
+                if (categoryOriginal.insights.severidade) {
+                    const severidadeLabel = categoryOriginal.insights.severidade.charAt(0).toUpperCase() + categoryOriginal.insights.severidade.slice(1);
+                    insightsHtml += `<p><strong>Severidade:</strong> <span class="severity-badge bg-${categoryOriginal.insights.severidade === 'crítica' ? 'red' : categoryOriginal.insights.severidade === 'alta' ? 'orange' : categoryOriginal.insights.severidade === 'média' ? 'yellow' : 'green'}">${severidadeLabel}</span></p>`;
+                }
+                if (categoryOriginal.insights.bullets_html && Array.isArray(categoryOriginal.insights.bullets_html)) {
+                    insightsHtml += '<ul>' + categoryOriginal.insights.bullets_html.join('') + '</ul>';
+                }
+                contentDiv.innerHTML += insightsHtml;
+            }
+
+            // Category suggestions
+            if (categoryOriginal.sugestoes) {
+                let hasSugestoes = false;
+                let sugestoesHtml = '<h3>Sugestões para a Categoria</h3>';
+                
+                if (categoryOriginal.sugestoes.recomendacoes) {
+                    hasSugestoes = true;
+                    sugestoesHtml += '<h4>Recomendações</h4><ul>';
+                    categoryOriginal.sugestoes.recomendacoes.forEach(rec => {
+                        sugestoesHtml += `<li>${rec}</li>`;
+                    });
+                    sugestoesHtml += '</ul>';
+                }
+                
+                if (categoryOriginal.sugestoes.quick_wins) {
+                    hasSugestoes = true;
+                    sugestoesHtml += '<h4>Quick Wins</h4><ul>';
+                    categoryOriginal.sugestoes.quick_wins.forEach(qw => {
+                        sugestoesHtml += `<li>${qw}</li>`;
+                    });
+                    sugestoesHtml += '</ul>';
+                }
+                
+                if (categoryOriginal.sugestoes.acoes_preventivas) {
+                    hasSugestoes = true;
+                    sugestoesHtml += '<h4>Ações Preventivas</h4><ul>';
+                    categoryOriginal.sugestoes.acoes_preventivas.forEach(ap => {
+                        sugestoesHtml += `<li>${ap}</li>`;
+                    });
+                    sugestoesHtml += '</ul>';
+                }
+                
+                if (hasSugestoes) {
+                    contentDiv.innerHTML += sugestoesHtml;
+                }
+            }
+
+            // Subcategories
+            const subcategoriesArray = Object.entries(categoryOriginal.subcategorias).map(([subKey, sub]) => ({
+                key: subKey,
+                label: sub.label,
+                quantidade: sub.quantidade,
+                percentual_categoria: sub.percentual_categoria,
+                percentual_acumulado_categoria: sub.percentual_acumulado_categoria,
+                original: sub
+            }));
+            subcategoriesArray.sort((a, b) => b.quantidade - a.quantidade);
+
+            // Pareto chart per category
+            const canvasId = `paretoChart_${categoryKey}`;
+            let categoryHtml = `<h3>Gráfico de Pareto - ${categoryOriginal.label}</h3>`;
+            categoryHtml += `<div class="chart-container"><canvas id="${canvasId}"></canvas></div>`;
+
+            // Subcategories table
+            categoryHtml += `<h3>Subcategorias de ${categoryOriginal.label}</h3>`;
+            categoryHtml += `<table><thead><tr><th>Subcategoria</th><th>Quantidade</th><th>% da Categoria</th><th>% Acumulado</th></tr></thead><tbody>`;
+            
+            let subcatRank = 0;
+            let accumulated = 0;
+            subcategoriesArray.forEach((subData) => {
+                subcatRank++;
+                accumulated += subData.percentual_categoria;
+                const isTop3 = subcatRank <= 3;
+                const is80Percent = accumulated <= 80 && (accumulated - subData.percentual_categoria) < 80;
+                let rowClass = '';
+                if (isTop3) rowClass = 'highlight-top3';
+                else if (is80Percent) rowClass = 'highlight-80percent';
+
+                categoryHtml += `<tr class="${rowClass}">
+                    <td data-label="Subcategoria">${subData.label}</td>
+                    <td data-label="Quantidade">${subData.quantidade}</td>
+                    <td data-label="% da Categoria">${subData.percentual_categoria.toFixed(2)}%</td>
+                    <td data-label="% Acumulado">${accumulated.toFixed(2)}%</td>
+                </tr>`;
+            });
+            categoryHtml += '</tbody></table>';
+            
+            contentDiv.innerHTML += categoryHtml;
+
+            details.appendChild(contentDiv);
+            categoriesContainer.appendChild(details);
+
+            // Render subcategory Pareto chart
+            setTimeout(() => {
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    const subLabels = subcategoriesArray.map(s => s.label);
+                    const subData = subcategoriesArray.map(s => s.quantidade);
+                    const subPercentsAcum = subcategoriesArray.map(s => s.percentual_acumulado_categoria);
+
+                    const subBackgroundColors = subData.map((_, i) => colorPalette[i % colorPalette.length]);
+                    const subBorderColors = subData.map((_, i) => borderColorPalette[i % borderColorPalette.length]);
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: subLabels,
+                            datasets: [
+                                {
+                                    type: 'bar',
+                                    label: 'Quantidade',
+                                    data: subData,
+                                    backgroundColor: subBackgroundColors,
+                                    borderColor: subBorderColors,
+                                    borderWidth: 1,
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    type: 'line',
+                                    label: '% Acumulado',
+                                    data: subPercentsAcum,
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    yAxisID: 'y1',
+                                    tension: 0.4,
+                                    fill: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: true, position: 'top' },
+                                title: { display: true, text: `Pareto: ${categoryOriginal.label}` }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Quantidade' } },
+                                y1: { beginAtZero: true, position: 'right', max: 100, title: { display: true, text: '% Acumulado' }, grid: { drawOnChartArea: false } }
+                            }
+                        }
+                    });
+                }
+            }, 100);
+
+            // Subcategory insights (append to contentDiv after table)
+            const subcategoryInsightsDiv = document.createElement('div');
+            subcategoryInsightsDiv.innerHTML = `<h3>Análise Detalhada por Subcategoria</h3>`;
+
+            subcategoriesArray.forEach((subData) => {
+                const subOriginal = subData.original;
+                if (!subOriginal.insights && !subOriginal.sugestoes && !subOriginal.analise_sre) return;
+
+                let subInsightsHtml = `<h4>${subOriginal.label}</h4>`;
+                if (subOriginal.insights) {
+                    subInsightsHtml += `<h5>Insights</h5>`;
+                    if (subOriginal.insights.sumario) {
+                        subInsightsHtml += `<p><strong>Sumário:</strong> ${subOriginal.insights.sumario}</p>`;
+                    }
+                    if (subOriginal.insights.analise_tickets) {
+                        subInsightsHtml += `<p><strong>Análise dos Tickets:</strong> ${subOriginal.insights.analise_tickets}</p>`;
+                    }
+                    
+                    let hasListItems = false;
+                    let listHtml = '<ul>';
+                    
+                    if (subOriginal.insights.bullets_html && Array.isArray(subOriginal.insights.bullets_html)) {
+                        listHtml += subOriginal.insights.bullets_html.join('');
+                        hasListItems = true;
+                    }
+                    if (subOriginal.insights.causa_raiz_provavel) {
+                        listHtml += `<li><strong>Causa Raiz Provável:</strong> ${subOriginal.insights.causa_raiz_provavel}</li>`;
+                        hasListItems = true;
+                    }
+                    if (subOriginal.insights.padroes_identificados && Array.isArray(subOriginal.insights.padroes_identificados)) {
+                        listHtml += `<li><strong>Padrões Identificados:</strong> ${subOriginal.insights.padroes_identificados.join(', ')}</li>`;
+                        hasListItems = true;
+                    }
+                    if (subOriginal.insights.exemplos_tickets && Array.isArray(subOriginal.insights.exemplos_tickets)) {
+                        listHtml += `<li><strong>Exemplos de Tickets:</strong><ul>`;
+                        subOriginal.insights.exemplos_tickets.forEach(ex => {
+                            listHtml += `<li>${ex.description_snippet}</li>`;
+                        });
+                        listHtml += `</ul></li>`;
+                        hasListItems = true;
+                    }
+                    
+                    listHtml += '</ul>';
+                    if (hasListItems) {
+                        subInsightsHtml += listHtml;
+                    }
+                }
+
+                if (subOriginal.sugestoes) {
+                    let hasSugestoes = false;
+                    let sugestoesListHtml = '<h5>Sugestões</h5><ul>';
+                    
+                    if (subOriginal.sugestoes.por_subcategoria && Array.isArray(subOriginal.sugestoes.por_subcategoria)) {
+                        subOriginal.sugestoes.por_subcategoria.forEach(item => {
+                            if (item.acoes && Array.isArray(item.acoes)) {
+                                item.acoes.forEach(acao => {
+                                    sugestoesListHtml += `<li>${acao}</li>`;
+                                    hasSugestoes = true;
+                                });
+                            }
+                        });
+                    }
+                    if (subOriginal.sugestoes.documentacao) {
+                        sugestoesListHtml += `<li><strong>Documentação:</strong> ${subOriginal.sugestoes.documentacao}</li>`;
+                        hasSugestoes = true;
+                    }
+                    if (subOriginal.sugestoes.melhorias_produto) {
+                        sugestoesListHtml += `<li><strong>Melhorias de Produto:</strong> ${subOriginal.sugestoes.melhorias_produto}</li>`;
+                        hasSugestoes = true;
+                    }
+                    
+                    sugestoesListHtml += '</ul>';
+                    if (hasSugestoes) {
+                        subInsightsHtml += sugestoesListHtml;
+                    }
+                }
+
+                // SRE Analysis - only for top 3 overall
+                if (top3OverallLabels.includes(categoryOriginal.label) && subOriginal.analise_sre) {
+                    subInsightsHtml += `<div style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ff9800; margin-top: 15px;">
+                        <h5 style="color: #ff9800; margin-top: 0;">Análise SRE - Ações Recomendadas</h5>`;
+                    
+                    if (subOriginal.analise_sre.acao_contencao && Array.isArray(subOriginal.analise_sre.acao_contencao)) {
+                        subInsightsHtml += '<h6>Ações de Contenção (Curto Prazo)</h6><ul>';
+                        subOriginal.analise_sre.acao_contencao.forEach(action => {
+                            subInsightsHtml += `<li><strong>${action.nome}:</strong> ${action.descricao}</li>`;
+                        });
+                        subInsightsHtml += '</ul>';
+                    }
+                    
+                    if (subOriginal.analise_sre.acao_causa_raiz && Array.isArray(subOriginal.analise_sre.acao_causa_raiz)) {
+                        subInsightsHtml += '<h6>Ações de Causa Raiz (Longo Prazo)</h6><ul>';
+                        subOriginal.analise_sre.acao_causa_raiz.forEach(action => {
+                            subInsightsHtml += `<li><strong>${action.nome}:</strong> ${action.descricao}</li>`;
+                        });
+                        subInsightsHtml += '</ul>';
+                    }
+                    
+                    subInsightsHtml += `</div>`;
+                }
+
+                const subcategoryDiv = document.createElement('div');
+                subcategoryDiv.innerHTML = subInsightsHtml;
+                subcategoryInsightsDiv.appendChild(subcategoryDiv);
+            });
+
+            contentDiv.appendChild(subcategoryInsightsDiv);
+        });
+    </script>
+</body>
+</html>
